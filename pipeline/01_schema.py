@@ -21,5 +21,11 @@ def read_csv(path):
 
 # csv파일을 반복돌면서 read_csv함수 호출해서 각 파일당 필드데이터와 각 row 데이터정보를 출력
 for path in sorted(DATA_DIR.glob("*.csv")):
-  colums, rows = read_csv(path)
-  print(f"\n{path.name} - {len(rows)}행 - {len(colums)}열")
+  columns, rows = read_csv(path)
+
+  # 각 csv파일의 첫번째의 모든 필드값 확인
+  for column in columns:
+    value = rows[0][column]
+    print(value)
+  
+
