@@ -93,7 +93,7 @@ for path in sorted(DATA_DIR.glob("*.csv")):
     # 반복되는 필드명을 한번만 출력하고 싶을때
     # example = next((r[column] for r in rows if r[column] != ""), "")
 
-    print(f" {column} : {kind}")
+    # print(f" {column} : {kind}")
 
 
 # PK를 찾아주는 함수
@@ -130,10 +130,39 @@ def owner_of(column, tables):
 # 1.모든 테이블별 필드, 데이터타입, PK 구하기
 tables = {}
 for path in sorted(DATA_DIR.glob("*.csv")):
-  colums, rows = read_csv(path)
+  columns, rows = read_csv(path)
   tables[path.stem] = {
     "columns": columns,
     "rows":rows,
     "type": {col: infer_type([r[col] for r in rows]) for col in columns},
-    "pk":infer_pk(colums, rows)
+    "pk":infer_pk(columns, rows)
   }
+
+# 2. 특정 테이블에 연결되어 있는 외래키 찾기
+for name, table in tables.items(): # 표 이름과 내용을 그룹으로 꺼냄
+  # 특정테이블에 복수개의 외래키가 담길수 있으므로 빈 리스트 생성
+  fks = []
+
+  # 현재 반복도는 테이블의 컬럼명 끝에 _id없으면 (PK, FK 아님)
+  for col in table["columns"]:
+    if not col.endswith("_id"):
+      continue
+
+    # 테이블의 PK의 주인 테이블몇 찾음
+    owner= owner_of(col, tables)
+
+    # 현재반복도는 후보 키값들 중에서 owner값이 동일하면 FK제외 (PK)
+    if not owner or owner == name:
+      continue
+
+    #반복도는 테이블의 주인키와 현재 컬림의 키값이 같지 않으면
+    if tables[owner]["pk"] != col:
+      continue
+
+    #fks란 빈 배열에 FK,테이블 명 저장
+    fks.append((name, col, owner))
+
+    table["fks"] = fks
+
+    print(fks)
+
