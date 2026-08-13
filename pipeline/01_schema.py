@@ -115,3 +115,14 @@ def infer_pk(columns, rows):
   # 위의 조건이 모두 만족하지 않는다면 PK가 없음
   return None
 
+# 특정 PK의 주인 테이블 찾기
+def owner_of(column, tables):
+  # 첫번쨰 인자로 들어온 PK에서 _id제거하고 그 뒤에 s, es붙여서 
+  # 두번째 인자로 들어온 테이블이름 리스트랑 매칭이 되는 이름을 찾음 (해당PK의 주인 테이블 명)
+  stem = column[:-3]
+  for candidate in (stem, stem+"s", stem+"es") :
+    if candidate in tables:
+      return candidate
+
+  return None
+
