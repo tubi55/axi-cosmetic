@@ -27,5 +27,22 @@ for path in sorted(DATA_DIR.glob("*.csv")):
   for column in columns:
     value = rows[0][column]
     print(value)
+
+# 해당 값이 정수인지 확인하는 함수
+def looks_int(text):
+  # 만약 음수 부호 "-"이 있으면 떼서 저장
+  body = text[1:] if text.startswith("-") else text
+
+  # 0~9가 아닌 글자가 섞여있으면
+  if not body.isdigit():
+    # 정수가 아님
+    print("정수가 아님")
+    return False
+  # 만약에 정수일때 앞자리가 0으로 시작하면 전화번호 (조건 2자리이상일떄)
+  print("전화번호임")
+  return not (len(body) > 1 and body.startswith("0"))
+
+
+looks_int("0")
   
 
