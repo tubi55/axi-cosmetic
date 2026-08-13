@@ -64,7 +64,25 @@ def looks_date(text):
   # fullmatch(검증할 정규표현식, 검사할 문자값)
   return re.fullmatch(r"\d{4}-\d{2}-\d{2}", text) is not None
 
-print(looks_date("2025-3-5"))
+# 타입 추론 함수 생성
+def infer_type(values):
+  #전달된 값에서 빈칸을 제외한 값을 변수에 담음
+  seen = [v for v in values if v!=""]
+
+  if not seen: 
+    return "TEXT"
+
+  if all(looks_int(v) for v in seen):
+    return "INTEGER"
+
+  if all(looks_float(v) for v in seen):
+    return "FLOAT"
+
+  if all(looks_date(v) for v in seen):
+    return "DATE"
+
+  return "TEXT"
+
 
   
 
