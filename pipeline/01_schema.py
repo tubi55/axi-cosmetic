@@ -84,5 +84,19 @@ def infer_type(values):
   return "TEXT"
 
 
+# 모든 csv파일을 하나씩 검사해서 컬럼명과 각 행의 값의 타입을 분석
+for path in sorted(DATA_DIR.glob("*.csv")):
+  columns, rows = read_csv(path)
+
+  for column in columns:
+    kind = infer_type([r[column]  for r in rows])
+
+    # next(조건에 맞는 값, 디폴트값) -> 조건에 맞는 값이 반복되면 하나만 출력하고 건너뜀, 조건문으로 빈 문자열 출력 그렇게 건너뛴 값을 반환
+    # 반복되는 필드명을 한번만 출력하고 싶을때
+    example = next((r[column] for r in rows if r[column] != ""), "")
+
+    print(f" {example} : {kind}")
+
+
   
 
