@@ -1,3 +1,10 @@
+# github에 내 작업을 단계별로 올리는 방법
+# 1. 깃허브에가서 내가 올리고 싶은 작업의 전용 저장소 URL복사 (private)
+# 2. 내 작업폴더에 터미널 열고 다음 명령어 차례대로 실행
+#  git init
+#  git remote add origin 저장소url
+# 3. 단계별로 기록을 남기고 싶을때마다 파일 저장 -> git add . -> git commit -m "커밋메세지" -> git push origin --all
+
 import csv
 from pathlib import Path
 
