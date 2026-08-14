@@ -204,21 +204,28 @@ def build_create(name, table):
 
 # 테이블 생성 순서 지정을 위한 함수
 def sort_by_dependency(tables):
-  done = set()
-  order = []
+  done = set() # scan이 아니로 search로 리스트에 특정 정보의 존재유무를 빠르게 파악하기 위함
+  order = [] # 실제 어떤 정보값들을 차례대로 담기 위함
 
+  # 테이블생성 sql문이 실행될 순서의 리스트가 다 담길때까지 무한 반복
   while len(order) < len(tables):
     moved = False
 
+    #각 csv파일 정보를 반복
     for name, table in tables.items():
       if name in done:
         continue
 
+      # 현재 반복도는 csv파일 정보에 참조하는 내용이 없으면 
+      # 참조당하는 테이블이니 우선적으로 order와 done에 담아주고 
+      # 이 다음 코드가 무시되면서 다음번 루프로 돌아감
       if all(owner in done for _, owner in table["fks"]):
         order.append(name)
         done.add(name)
         moved = True
 
+    # 참조당하는 테이블이 모두 order에 담기면 moved값이 False로 바뀌며 
+    # 아래구문이 실행되며 나머지 참조하는 테이블 순서가 모두 이후에 담기게 됨
     if not moved:
       order += [n for n in tables if n not in done]
       break
