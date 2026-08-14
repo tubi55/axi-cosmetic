@@ -195,11 +195,39 @@ def build_create(name, table):
   return f"CREATE TABLE {name} (\n"+ ",\n".join(lines) + "\n)"
 
 
-#현재 모든 테이블명과 테이블정보를 가져와서 반복처리
-for name, table in tables.items():
-  # 반복도는 name(테이블명), table(테이블정보)를 이용해 build_create()함수 반복 호출
-  # 결국 CSV파일의 갯수에 따라 테이블 생성 SQL문 자동 생성
-  print(build_create(name, table)+";\n")
+# #현재 모든 테이블명과 테이블정보를 가져와서 반복처리
+# for name, table in tables.items():
+#   # 반복도는 name(테이블명), table(테이블정보)를 이용해 build_create()함수 반복 호출
+#   # 결국 CSV파일의 갯수에 따라 테이블 생성 SQL문 자동 생성
+#   print(build_create(name, table)+";\n")
+
+
+# 테이블 생성 순서 지정을 위한 함수
+def sort_by_dependency(tables):
+  done = set()
+  order = []
+
+  while len(order) < len(tables):
+    moved = False
+
+    for name, table in tables.items():
+      if name in done:
+        continue
+
+      if all(owner in done for _, owner in table["fks"]):
+        order.append(name)
+        done.add(name)
+        moved = True
+
+    if not moved:
+      order += [n for n in tables if n not in done]
+      break
+
+  return order
+
+table_order = sort_by_dependency(tables)
+print(table_order)
+      
 
 
   
