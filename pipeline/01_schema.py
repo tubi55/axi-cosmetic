@@ -176,23 +176,29 @@ for name, table in tables.items(): # 표 이름과 내용을 그룹으로 꺼냄
 def build_create(name, table):
   lines = []
 
+  # 테이블 생성 sql 괄호 안의 구문을 컴럼 정보로 반복 돌며 lines에 리스트로 담음
   for col in table["columns"]:
     piece = f"   {col} {table['type'][col]}"
 
+    # 이때 만약 반복도는 해당 컬럼이 PK로 지정되어 있으면 오른쪽에 "PRIMARY KEY"문구 추가
     if col == table["pk"]:
       piece += " PRIMARY KEY"
 
     lines.append(piece)
 
+  #table정보에서 fks 값을 반복돌며 외래키, 참조테이블명 추출 (col:외래키, owner:참조테이블명)
+  # 추출된 정보로 마지막 외래키 지정 sql문 추가로 이어붙임
   for col, owner in table["fks"]:
-    print(col)
     lines.append(f"   FOREIGN KEY ({col}) REFERENCES {owner}({col})")
 
+  # 마지막으로 제일 상단 테이블 상단 구문과 ()안 반복 구문을 이어붙임
   return f"CREATE TABLE {name} (\n"+ ",\n".join(lines) + "\n)"
 
 
-#현재 모든 테이블명과 테이블정보를 가져와서 자동으로 모든 테이블생성 sql문 확인
+#현재 모든 테이블명과 테이블정보를 가져와서 반복처리
 for name, table in tables.items():
+  # 반복도는 name(테이블명), table(테이블정보)를 이용해 build_create()함수 반복 호출
+  # 결국 CSV파일의 갯수에 따라 테이블 생성 SQL문 자동 생성
   print(build_create(name, table)+";\n")
 
 
