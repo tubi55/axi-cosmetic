@@ -282,7 +282,7 @@ for name in table_order:
   # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (값, 값, 값, 값)
   # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (?,?,?,?), (값, 값, 값, 값,)
 
-  con.executemany(f"INSERT INTO {name} ({", ".join(columns)}) VALUES {placeholders})", values,)
+  con.executemany(f"INSERT INTO {name} ({", ".join(columns)}) VALUES ({placeholders})", values,)
 
 con.commit()
   
