@@ -266,9 +266,9 @@ for name in table_order:
   table = tables[name]
   con.execute(build_create(name, table))
       
-  columns = table["column"]
+  columns = table["columns"]
 
-  # 컬럼이 8개면 "?,?,?,?,?,?"
+  # 컬럼이 6개면 "?,?,?,?,?,?"
   # 컴럼의 갯수만큼  ?로 만들어서 ", "로 이어진 문구를 insert문 뒤에 이어붙임
   placeholders = ", ".join("?" for _ in columns)
 
@@ -278,6 +278,14 @@ for name in table_order:
     tuple(convert(row[col], table["type"][col]) for col in columns) # 한 행을 타입에 맞게 바꿔 튜플로 저장
     for row in table["rows"] # 이걸 모든 행에 대해서 반복처리
   ]
+
+  # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (값, 값, 값, 값)
+  # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (?,?,?,?), (값, 값, 값, 값,)
+
+  con.executemany(f"INSERT INTO {name} ({", ".join(columns)}) VALUES {placeholders})", values,)
+
+con.commit()
+  
 
   
 
