@@ -162,7 +162,43 @@ for name, table in tables.items(): # 표 이름과 내용을 그룹으로 꺼냄
     #fks란 빈 배열에 FK,테이블 명 저장
     fks.append((name, col, owner))
 
-    table["fks"] = fks
+  table["fks"] = fks
 
-    print(fks)
+
+# 지금까지 생성한 정보로 테이블 생성하는 sql구문 생성 함수
+# CREATE TABLE purchases (
+#   purchase_id TEXT PRIMARY KEY,
+#   cutomer_id TEXT,
+#   quantity INTIGER,
+#   FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+# )
+
+def build_create(name, table):
+  lines = []
+
+  for col in table["columns"]:
+    piece = f"   {col} {table['type'][col]}"
+
+    if col == table["pk"]:
+      piece += " PRIMARY KEY"
+
+    lines.append(piece)
+
+  for col, owner in table["fks"]:
+    lines.append(f"   FOREIGN KEY ({col}) REFERENCES {owner}({col})")
+
+  return f"CREATE TABLE {name} (\n"+ ",\n".join(lines) + "\n)"
+
+
+#현재 모든 테이블명과 테이블정보를 가져와서 자동으로 모든 테이블생성 sql문 확인
+for name, table in tables.items():
+  print(build_create(name, table)+";\n")
+
+
+  
+
+
+
+  
+
 
