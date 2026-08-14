@@ -281,13 +281,24 @@ for name in table_order:
 
   # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (값, 값, 값, 값)
   # INSERT INTO 테이블명 (컬럼,컬럼,컬럼,컬럼) values (?,?,?,?), (값, 값, 값, 값,)
-
   con.executemany(f"INSERT INTO {name} ({", ".join(columns)}) VALUES ({placeholders})", values,)
 
 con.commit()
-  
 
-  
+
+# ===== 생성된 테이블과 데이터 확인 =====
+
+# sqlite_master는 sqlite가 내부적으로 관리하는 시스템 테이블
+# 여기에 CREATE로 만들어진 테이블/인덱스 정보가 모두 들어있음
+# type='table' 조건으로 테이블만 골라내고, sqlite_% 는 sqlite 내부 테이블이라 제외
+created = con.execute("""
+  SELECT name FROM sqlite_master
+  WHERE type = 'table' AND name NOT LIKE 'sqlite_%'
+  ORDER BY name
+""").fetchall()
+
+print(created)
+
 
 
 
