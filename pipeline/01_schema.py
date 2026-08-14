@@ -2,11 +2,25 @@
 import re
 import csv
 from pathlib import Path
+import sqlite3
 
 # 폴더 구조가 중첩되어 있기 때문에 루트 경로를 변수에 저장
 ROOT = Path(__file__).resolve().parent.parent
 # 루트경로에서 data폴더가 있는 경로를 다시 변수에 저장
 DATA_DIR = ROOT / "data"
+
+# 디비파일 생성위치 지정
+db_file = ROOT / "cosmetic.db"
+
+if db_file.exists():
+  db_file.unlink()
+
+# 해당 구문이 실행되는 순간 자동적으로 db파일이 없으면 자동 생성되며 연결
+con = sqlite3.connect(db_file)
+
+# 외래키 검사 설정
+# PRAGMA는 sqlite 자체 설정을 변경하는 구문, 연결때마다 활성화 시켜야함
+con.execute("PRAGMA foreign_keys = ON")
 
 # 인자로 csv파일이 있는 패스 경로를 전달하면 각 파일의 필드명만 리스트형태로 반환하는 함수
 def read_csv(path):
@@ -204,7 +218,7 @@ def build_create(name, table):
 
 # 테이블 생성 순서 지정을 위한 함수
 def sort_by_dependency(tables):
-  done = set() # scan이 아니로 search로 리스트에 특정 정보의 존재유무를 빠르게 파악하기 위함
+  done = set() # scan이 아닌 search로 리스트에 특정 정보의 존재유무를 빠르게 파악하기 위함
   order = [] # 실제 어떤 정보값들을 차례대로 담기 위함
 
   # 테이블생성 sql문이 실행될 순서의 리스트가 다 담길때까지 무한 반복
